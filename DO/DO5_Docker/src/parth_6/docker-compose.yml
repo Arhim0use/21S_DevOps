@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  my_serv: 
+    build: ./my_serv
+    container_name: parth_6
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./my_serv/nginx
+        target: /etc/nginx
+  nginx:
+    build: ./nginx_06
+    container_name: nginx_proxy
+    ports:
+      - '80:8080'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl --silent --fail http://my_serv:81 || exit 1"]
+      interval: 1m30s
+      timeout: 1m
+      retries: 5
+      start_period: 10s
+    depends_on:
+      - my_serv
